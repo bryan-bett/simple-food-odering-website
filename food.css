@@ -1,0 +1,62 @@
+body {
+   background-image:url("image/imgadmin.jpg") ;
+   background-color: white;
+	background-repeat: no-repeat;
+	background-position: center;
+	background-size: cover;
+}
+.header{
+	overflow: hidden;
+	    background-image: linear-gradient(to bottom left,red,green,white);
+	border-radius: 4px;
+}
+.header a {
+    float: right;
+    
+    text-align: center;
+    padding: 10px;
+    text-decoration:none;
+    font-size: 16px; 
+    line-height: 20px;
+    border-radius: 4px;
+    color: aliceblue;
+
+}
+.header a:hover {
+    background-color: orange;
+    
+}
+
+.header a.active {
+    background-color: dodgerblue;
+    color: white;
+}
+.form{
+	align-content: center;
+	text-align: center;
+	background-color: white;
+	margin-top: 20px;
+	padding-top: 10px;
+    padding-bottom: 10px;
+	margin-right:25%;
+    margin-left:25%;
+	border-radius: 4px;
+	opacity: 0.7;
+}
+.form input,label,textarea,p{
+	 font-weight: bold;
+  color: #000000;
+	
+}
+label{
+	width:180px;
+	clear:left;
+	padding-right:0px;
+	
+}
+#loginbtn{
+	float:right;
+}
+
+
+
