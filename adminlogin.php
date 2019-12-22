@@ -10,7 +10,7 @@ if(isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true){
 require "functions.php";
 //check if user is already logged in and redirect them to their specific page
 
-$username = $password = $username_error = $password_error = "";
+$username = $password = $login_error = $empty_username = $empty_password = "";
 $hashed_pwd = "";
 $usertype = "";
 
@@ -19,7 +19,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST") {
     $password=stripcslashes($password);//remove slashes in password and username entry
 	
     if(empty(trim($_POST["username"]))){
-        $username_error = "Please enter username.";
+        $empty_username = "Please enter username.";
         //check if username entry is empty
     } else{
         $username = trim($_POST["username"]);
@@ -32,56 +32,50 @@ if($_SERVER["REQUEST_METHOD"] == "POST") {
         $password = trim($_POST["password"]);
     }
     
-    if(empty($username_error) && empty($password_error)) {
+    if(empty($empty_username) && empty($empty_password)) {
         $sql = "SELECT id, username, password, status  FROM users WHERE username = '$username'";
        
         $result = selectData($sql);
-        
-        /////////////////////////////////////////////////////////////////////////////////////
-        foreach($result[0] as $key=>$value) {
-            if($key === 'id') $id = $value;
-            if($key === 'username') $user = $value;
-            if($key === 'password') $hashed_pwd = $value;
-            if($key === 'status') $usertype = $value;
+
+        if($result == null){
+            $login_error ="Incorrect username or password.";
         }
-		 $hashed_pwd = password_hash($password, PASSWORD_DEFAULT);
-        // password hashing
-        if(password_verify($password, $hashed_pwd)) {
-		
-            session_start();
-            $_SESSION["loggedin"] = true;
-            $_SESSION["id"] = $id;
-            $_SESSION["username"] = $username;
-      
-            //IF STATEMENT FOR USER
-            /*
-            if($username == 'admin') { //change this with second login page for admin
-                header("location: upload.php");
-            } else {
-                
-                echo '<script>alert("You are not an admin! redirecting you to user login")</script>';
-                echo '<script>window.location="login.php"</script>';
-                exit;
-				
+        else{
+        
+            // what if user is not present in the db
+            foreach($result[0] as $key=>$value) {
+                if($key === 'id') $id = $value;
+                if($key === 'username') $user = $value;
+                if($key === 'password') $hashed_pwd = $value;
+                if($key === 'status') $usertype = $value;
             }
-            */
+            $hashed_pwd = password_hash($password, PASSWORD_DEFAULT);
+            // password hashing
             if($usertype == 'admin') { //change this with second login page for admin
-                header("location: upload.php");
+                if(password_verify($password, $hashed_pwd)) {
+                
+                    session_start();
+                    $_SESSION["loggedin"] = true;
+                    $_SESSION["id"] = $id;
+                    $_SESSION["username"] = $username;          
+                    
+                    header("location: upload.php");
+
+                }
+                else{
+                    $empty_password = "Invalid password.";
+                }
             } elseif($usertype == 'user') {
-                echo '<script>alert("You are not an admin! redirecting you to user order page")</script>';
-                echo '<script>window.location="cartorder.php"</script>';
+                echo '<script>alert("You are not an admin! redirecting you to user login page")</script>';
+                echo '<script>window.location="login.php"</script>';
+            
             }
             else{
-                echo '<script>alert("Error with user type")</script>';
-                echo '<script>window.location="login.php"</script>';
+                echo '<script>alert("Something went wrong!")</script>';
+                echo '<script>window.location="adminlogin.php"</script>';
                 exit;	
             }
-			
-		}
-        else{
-			$password_error = "Invalid password.";
-        }
-        
+        }        
     }
 }
 ?>
@@ -114,13 +108,14 @@ if($_SERVER["REQUEST_METHOD"] == "POST") {
 			<div class="form">
     <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
 	<h2>Admin Login</h2>
-			<br>
+
+         <span class="help-block"><?php echo $login_error;?></span><br>
         <label>Username</label>
         <input type="text" name="username" value="<?php echo $username;?>"><br>
-        <span class="help-block"><?php echo $username_error;?></span><br>
+        <span class="help-block"><?php echo $empty_username;?></span><br>
         <label>Password</label>
         <input type="password" name="password"><br>
-        <span class="help-block"><?php echo $password_error;?></span><br>
+        <span class="help-block"><?php echo $empty_password;?></span><br>
         <input type="submit"a href="upload.php" value="Login" id="logibtn"><br>
 		
 		

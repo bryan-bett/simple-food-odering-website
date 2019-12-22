@@ -29,7 +29,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST") {
         $none_match = "Password did not match!";
     }
     $usertype = $_POST["type"];// change this to automatically register as normal user
-                               // to change user to admin, log in as admin and chaner usertype    
+                               // to change user to admin, log in as admin and change usertype    
     if(empty($existing_user) && empty($psw_length) && empty($none_match)){
         $hashed_psw = password_hash($password, PASSWORD_DEFAULT);
 

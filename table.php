@@ -39,7 +39,7 @@ require "functions.php";
   color: #000000;
   background-color:white;opacity: 0.8;">
     <tr>
-
+    <th style=""></th>
         <th width="25%" style="">Food Item</th>
         <th width="30%" style="">Image</th>
         <th width="10%" style="">Action</th>

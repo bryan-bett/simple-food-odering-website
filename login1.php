@@ -1,4 +1,5 @@
 <?php
+// dropped login page
 session_start();
 require "functions.php";
 

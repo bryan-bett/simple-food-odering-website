@@ -6,7 +6,7 @@ if(isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true){
   header("location: cartorder.php");
   exit;
 }
-$username = $password = $username_error = $password_error = "";
+$username = $password = $login_error = $empty_username = $empty_password = "";
 $usertype = "";
 
 
@@ -17,58 +17,61 @@ if($_SERVER["REQUEST_METHOD"] == "POST") {
 	
     
     if(empty(trim($_POST["username"]))){
-        $username_error = "Please enter username.";
+        $empty_username = "Please enter username.";
     } else{
         $username = trim($_POST["username"]);
     }
     if(empty(trim($_POST["password"]))){
-        $password_error = "Please enter your password.";
+        $empty_password = "Please enter your password.";
     } else{
         $password = trim($_POST["password"]);
     }
     
 
 
-    if(empty($username_error) && empty($password_error)) {
+    if(empty($empty_username) && empty($empty_password)) {
         $sql = "SELECT id, username, password, status FROM users WHERE username = '$username'";
        
         $result = selectData($sql);
         
-        
-        foreach($result[0] as $key=>$value) {
-            if($key === 'id') $id = $value;
-            if($key === 'username') $user = $value;
-            if($key === 'password') $hashed_pwd = $value;
-            if($key === 'status') $usertype = $value;
+        if($result == null){
+            $login_error ="Incorrect username or password.";
         }
+        else{
         
-        if(password_verify($password, $hashed_pwd)) {
-	
-		
-            session_start();
-            $_SESSION["loggedin"] = true;
-            $_SESSION["id"] = $id;
-            $_SESSION["username"] = $username;
-      
-            
+            foreach($result[0] as $key=>$value) {
+                if($key === 'id') $id = $value;
+                if($key === 'username') $user = $value;
+                if($key === 'password') $hashed_pwd = $value;
+                if($key === 'status') $usertype = $value;
+            }
+
             if($usertype == 'admin') {
                 echo '<script>alert("Redirecting to admin login ")</script>';
-                header("location: upload.php");
-            } elseif($usertype == 'user') {
-                header("location: cartorder.php");
+                echo '<script>window.location="adminlogin.php"</script>';
+
+
+            }elseif($usertype == 'user') {
+                if(password_verify($password, $hashed_pwd)) {
+            
+                    session_start();
+                    $_SESSION["loggedin"] = true;
+                    $_SESSION["id"] = $id;
+                    $_SESSION["username"] = $username;
+            
+                    header("location: cartorder.php"); 
+
+                }
+                else{
+                    $empty_password = "Invalid password.";
+                    
+                }
             }
             else{
-                echo '<script>alert("Error with user type")</script>';
+                echo '<script>alert("Something went wrong!")</script>';
                 echo '<script>window.location="login.php"</script>';
             }
-			
-		}
-        else{
-			$password_error = "Invalid password.";
-			
-
         }
-        
     }
 }
 ?>
@@ -100,13 +103,14 @@ if($_SERVER["REQUEST_METHOD"] == "POST") {
 			<div class="form">
     <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
 	<h2>Login</h2>
-			<br>
+			
+         <span class="help-block"><?php echo $login_error;?></span><br>
         <label>Username</label><br>
         <input type="text" name="username" value="<?php echo $username;?>"><br>
-        <span class="help-block"><?php echo $username_error;?></span><br>
+        <span class="help-block"><?php echo $empty_username;?></span><br>
         <label>Password</label><br>
         <input type="password" name="password"><br>
-        <span class="help-block"><?php echo $password_error;?></span><br>
+        <span class="help-block"><?php echo $empty_password;?></span><br>
         <input type="submit"a href="upload.php" value="Login"><br>
 		
 		
